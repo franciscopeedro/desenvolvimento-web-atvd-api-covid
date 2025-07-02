@@ -23,7 +23,7 @@
   </style>
 </head>
 <body>
-  <h1>COVID-19 - Dados por País</h1>
+  <h1>COVID-19 - Dados por País (Fonte: disease.sh)</h1>
   <table id="tabela-paises">
     <thead>
       <tr>
@@ -37,11 +37,14 @@
   </table>
 
   <script>
-    fetch('https://covid19-brazil-api.now.sh/api/report/v1/countries')
+    fetch('https://disease.sh/v3/covid-19/countries')
       .then(res => res.json())
-      .then(data => {
-        const paises = data.data;
+      .then(paises => {
+        
         const tbody = document.querySelector('tbody');
+
+        // Ordenar os países em ordem alfabética
+        paises.sort((a, b) => a.country.localeCompare(b.country));
 
         paises.forEach(pais => {
           const { country, cases, deaths, recovered } = pais;
@@ -53,12 +56,16 @@
 
           linha.innerHTML = `
             <td>${country}</td>
-            <td>${cases}</td>
-            <td>${deaths}</td>
-            <td>${recovered}</td>
+            <td>${cases.toLocaleString('pt-BR')}</td>
+            <td>${deaths.toLocaleString('pt-BR')}</td>
+            <td>${recovered.toLocaleString('pt-BR')}</td>
           `;
           tbody.appendChild(linha);
         });
+      })
+      .catch(error => {
+        console.error("Erro ao carregar dados:", error);
+        alert("Erro ao carregar dados. Verifique a conexão ou a API.");
       });
   </script>
 </body>
